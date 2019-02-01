@@ -21,7 +21,10 @@ class Game {
 
 	void process() {
 		Player one, two;
+		Solver cpu;
+		cpu = null;
 		one = two = null;
+		_cpuOn = false;
 
 		while (true) {
 			if (_state == SETUP) {
@@ -32,11 +35,26 @@ class Game {
 				_piecesLeft = 10;
 			}
 
-			one = new Player(this, 1);
-			one.setPosition(new Position(10));
-			two = new Player(this, 2);
+			String decision = "";
+			while (!decision.equals("y") && !decision.equals("n")) {
+				if (decision.equals("q") || decision.equals("quit")) {
+					System.exit(0);
+				}
+				System.out.print("===> Play against CPU? (y/n): ");
+				decision = _scanner.next();
+			}
+			if (decision.equals("y")) {
+				cpu = new Solver();
+				cpu.setPosition(new Position(10));
+				_currPlayer = cpu;
+				_cpuOn = true;
+			} else {
+				one = new Player(1);
+				one.setPosition(new Position(10));
+				_currPlayer = one;
+			}
 
-			_currPlayer = one;
+			two = new Player(2);
 
 			while (_state != SETUP && !gameOver()) {
 				Position move;
@@ -46,12 +64,15 @@ class Game {
 						move = one.myMove(_scanner);
 					}
 					_currPlayer = two;
-				} else {
+				} else if (_currPlayer.getId() == 2) {
 					move = two.myMove(_scanner);
 					while (!checkMove(move) ) {
 						move = two.myMove(_scanner);
 					}
-					_currPlayer = one;
+					_currPlayer = _cpuOn ? cpu : one;
+				} else {
+					move = cpu.myMove();
+					_currPlayer = two;
 				}
 				doMove(move);
 			}
@@ -67,12 +88,12 @@ class Game {
 	boolean checkMove(Position move) {
 		int moveInt = move.getPosInt();
 		if (moveInt != 1 && moveInt != 2) {
-			System.out.println("Invalid move. You may only take 1 or 2 pieces a turn.");
+			System.out.println("===> Invalid move. You may only take 1 or 2 pieces a turn.");
 			return false;
 		}
 		if (moveInt > _piecesLeft) {
-			System.out.println("Invalid move. You can't take more than the number of remaining pieces.");
-			String msg = _piecesLeft == 1 ? "There is " + _piecesLeft + " piece left on the board." : "There are " + _piecesLeft + " pieces left on the board.";
+			System.out.println("===> Invalid move. You can't take more than the number of remaining pieces.");
+			String msg = _piecesLeft == 1 ? "===> There is " + _piecesLeft + " piece left on the board." : "===> There are " + _piecesLeft + " pieces left on the board.";
 			System.out.println(msg);
 			return false;
 		}
@@ -81,8 +102,13 @@ class Game {
 
 	void doMove(Position move) {
 		_piecesLeft -= move.getPosInt();
+		// currPlayer is the next player at this point, but original player is still executing move
 		_currPlayer.setPosition(new Position(_piecesLeft));
-		String msg = _piecesLeft == 1 ?  _piecesLeft + " piece left on the board." : _piecesLeft + " pieces left on the board.";
+		if (_cpuOn && _currPlayer.getId() != 0) {
+			String cpuMsg = move.getPosInt() == 1 ? "CPU takes " + move.getPosInt() + " piece." : "CPU takes " + move.getPosInt() + " pieces.";
+			System.out.println(cpuMsg);
+		}
+		String msg = _piecesLeft == 1 ? "===> " + _piecesLeft + " piece left on the board." : "===> " + _piecesLeft + " pieces left on the board.";
 		System.out.println(msg);
 	}
 
@@ -92,8 +118,10 @@ class Game {
 
 	void reportWinner() {
 		String msg = "Player 1 wins.";
-		if (_currPlayer.getId() == 1) {
+		if (_currPlayer.getId() == 1 || _currPlayer.getId() == 0) {
 			msg = "Player 2 wins.";
+		} else if (_currPlayer.getId() == 2 && _cpuOn) {
+			msg = "CPU wins.";
 		}
 		System.out.println("====================================================");
 		System.out.println(msg);
@@ -105,4 +133,5 @@ class Game {
 	private State _state;
 	private int _piecesLeft;
 	private Player _currPlayer;
+	private boolean _cpuOn;
 }

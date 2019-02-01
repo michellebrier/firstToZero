@@ -7,8 +7,7 @@ package firstToZero;
 import java.util.Scanner;
 
 public class Player {
-	Player(Game game, int id) {
-		_game = game;
+	Player(int id) {
 		_id = id;
 		_position = null;
 		_prompt = "Player " + Integer.toString(_id) + ": ";
@@ -22,14 +21,6 @@ public class Player {
 		_position = pos;
 	} 
 
-	Position myPosition() {
-		return _position;
-	}
-
-	Game game() {
-		return _game;
-	}
-
 	Position myMove(Scanner scanner) {
 		System.out.print(_prompt);
 		String move = scanner.next();
@@ -39,7 +30,6 @@ public class Player {
 		return new Position(Integer.parseInt(move));
 	}
 
-	private final Game _game;
 	private int _id;
 	private Position _position;
 	private String _prompt;
