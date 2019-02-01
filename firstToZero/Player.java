@@ -14,10 +14,6 @@ public class Player {
 		_prompt = "Player " + Integer.toString(_id) + ": ";
 	}
 
-	void doMove(Position move) {
-		_position = move;
-	}
-
 	int getId() {
 		return _id;
 	}
@@ -37,6 +33,9 @@ public class Player {
 	Position myMove(Scanner scanner) {
 		System.out.print(_prompt);
 		String move = scanner.next();
+		if (move.equals("q") || move.equals("quit")) {
+			System.exit(0);
+		}
 		return new Position(Integer.parseInt(move));
 	}
 

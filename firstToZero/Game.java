@@ -42,9 +42,15 @@ class Game {
 				Position move;
 				if (_currPlayer.getId() == 1) {
 					move = one.myMove(_scanner);
+					while (!checkMove(move) ) {
+						move = one.myMove(_scanner);
+					}
 					_currPlayer = two;
 				} else {
 					move = two.myMove(_scanner);
+					while (!checkMove(move) ) {
+						move = two.myMove(_scanner);
+					}
 					_currPlayer = one;
 				}
 				doMove(move);
@@ -58,10 +64,26 @@ class Game {
 		}
 	}
 
+	boolean checkMove(Position move) {
+		int moveInt = move.getPosInt();
+		if (moveInt != 1 && moveInt != 2) {
+			System.out.println("Invalid move. You may only take 1 or 2 pieces a turn.");
+			return false;
+		}
+		if (moveInt > _piecesLeft) {
+			System.out.println("Invalid move. You can't take more than the number of remaining pieces.");
+			String msg = _piecesLeft == 1 ? "There is " + _piecesLeft + " piece left on the board." : "There are " + _piecesLeft + " pieces left on the board.";
+			System.out.println(msg);
+			return false;
+		}
+		return true;
+	}
+
 	void doMove(Position move) {
 		_piecesLeft -= move.getPosInt();
 		_currPlayer.setPosition(new Position(_piecesLeft));
-		System.out.println(_piecesLeft + " pieces left on the board.");
+		String msg = _piecesLeft == 1 ?  _piecesLeft + " piece left on the board." : _piecesLeft + " pieces left on the board.";
+		System.out.println(msg);
 	}
 
 	boolean gameOver() {
@@ -75,6 +97,7 @@ class Game {
 		}
 		System.out.println("====================================================");
 		System.out.println(msg);
+		System.out.println("====================================================");
 		System.out.println("Play again!");
 	}
 

@@ -4,7 +4,6 @@ package firstToZero;
 * @author Michelle Brier
 */
 
-import static firstToZero.Command.Type.*;
 import java.util.ArrayList;
 
 public class Position {
