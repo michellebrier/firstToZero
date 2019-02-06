@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import static firstToZero.Game.State.*;
 import firstToZero.*;
+import firstToZero.Solver.*;
 
 class Game {
 	static enum State {
@@ -48,6 +49,17 @@ class Game {
 				cpu.setPosition(new Position(10));
 				_currPlayer = cpu;
 				_cpuOn = true;
+				String printDes = "";
+				while (!printDes.equals("y") && !printDes.equals("n")) {
+					if (printDes.equals("q") || printDes.equals("quit")) {
+						System.exit(0);
+					}
+					System.out.println("===> Print game over values for all positions? (y/n): ");
+					printDes = _scanner.next();
+				}
+				if (printDes.equals("y")) {
+					cpu.printPositionValues();
+				}
 			} else {
 				one = new Player(1);
 				one.setPosition(new Position(10));

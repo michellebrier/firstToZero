@@ -36,11 +36,43 @@ public class Solver extends Player {
 		return ret;
 	}
 
+	void printValue(Value val) {
+		if (val == Value.WINNING) {
+			System.out.println("Win");
+		} else {
+			System.out.println("Lose");
+		}
+	}
+
+	void printPositionValues() {
+		System.out.println("===> CPU VALUES FOR POSITIONS 0 - 10:");
+		for (int i = 0; i < 11; i++) {
+			System.out.print(i + ": ");
+			printValue(gameOverValue(new Position(i)));
+		}
+		System.out.println("===> END");
+	}
+
 	Value gameOverValue(Position pos) {
-		if (pos.getPosInt() % 3 == 0) {
+		int curr = pos.getPosInt();
+
+		if (curr == 0) {
 			return Value.LOSING;
 		}
-		return Value.WINNING;
+
+		Value one = gameOverValue(new Position(curr - 1));
+		Value two = Value.LOSING;
+		boolean twoBranches = false;
+		if (curr > 1) {
+			two = gameOverValue(new Position(curr - 2));
+			twoBranches = true;
+		}
+
+		if ((twoBranches && (one == Value.LOSING || two == Value.LOSING))
+			|| (!twoBranches && one == Value.LOSING)) {
+			return Value.WINNING;
+		}
+		return Value.LOSING;
 	}
 
 	Value solve(Position pos) {
