@@ -75,19 +75,8 @@ public class Solver extends Player {
 		return Value.LOSING;
 	}
 
-	Value solve(Position pos) {
-		ArrayList<Position> moves = generateMoves();
-		for (Position move : moves) {
-			Value moveVal = gameOverValue(move);
-			if (moveVal == Value.LOSING) {
-				return Value.WINNING;
-			}
-		}
-		return Value.LOSING;
-	}
-
 	Position myMove() {
-		if (solve(_position) == Value.LOSING) {
+		if (gameOverValue(_position) == Value.LOSING) {
 			// lose slowly
 			return new Position(1);
 		} else {
