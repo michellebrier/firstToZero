@@ -4,7 +4,6 @@ package firstToZero;
 * @author Michelle Brier
 */
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Solver extends Player {
@@ -22,18 +21,6 @@ public class Solver extends Player {
 
 	Position getPosition() {
 		return _position;
-	}
-
-	ArrayList<Position> generateMoves() {
-		ArrayList<Position> ret = new ArrayList<>();
-		int currPosition = _position.getPosInt();
-		Position takeOne = new Position(currPosition - 1);
-		ret.add(takeOne);
-		if (currPosition - 2 >= 0) {
-			Position takeTwo = new Position(currPosition - 2);
-			ret.add(takeTwo);
-		}
-		return ret;
 	}
 
 	void printValue(int val) {
@@ -72,9 +59,8 @@ public class Solver extends Player {
 			// lose slowly
 			return new Position(1);
 		} else {
-			ArrayList<Position> moves = generateMoves();
 			// other player's value
-			return gameOverValue(moves.get(0)) == 0 ? new Position(1) : new Position(2);
+			return gameOverValue(new Position(_position.getPosInt() - 1)) == 0 ? new Position(1) : new Position(2);
 		}
 	}
 
