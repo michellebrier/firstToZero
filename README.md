@@ -1,5 +1,5 @@
-To compile: `javac firstToZero/Main.java`
+To compile: `javac firstToZero/*.java`
 
-To run: `java -ea firstToZero/Main`
+To run: `java firstToZero/Main`
 
 To quit: type `q` or `quit`

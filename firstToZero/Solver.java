@@ -5,15 +5,15 @@ package firstToZero;
 */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Solver extends Player {
-	static enum Value {
-		WINNING, LOSING;
-	}
-
-	Solver() {
+	Solver(int totalPieces) {
 		super(0);
 		_position = null;
+		_totalPieces = totalPieces;
+		_memoized = new int[totalPieces + 1];
+		Arrays.fill(_memoized, -1);
 	}
 
 	void setPosition(Position pos) {
@@ -29,15 +29,15 @@ public class Solver extends Player {
 		int currPosition = _position.getPosInt();
 		Position takeOne = new Position(currPosition - 1);
 		ret.add(takeOne);
-		if (_position.getPosInt() - 2 >= 0) {
+		if (currPosition - 2 >= 0) {
 			Position takeTwo = new Position(currPosition - 2);
 			ret.add(takeTwo);
 		}
 		return ret;
 	}
 
-	void printValue(Value val) {
-		if (val == Value.WINNING) {
+	void printValue(int val) {
+		if (val == 1) {
 			System.out.println("Win");
 		} else {
 			System.out.println("Lose");
@@ -45,51 +45,41 @@ public class Solver extends Player {
 	}
 
 	void printPositionValues() {
-		System.out.println("===> CPU VALUES FOR POSITIONS 0 - 10:");
-		for (int i = 0; i < 11; i++) {
+		System.out.println("===> CPU VALUES FOR POSITIONS:");
+		for (int i = 0; i <= _totalPieces; i++) {
 			System.out.print(i + ": ");
 			printValue(gameOverValue(new Position(i)));
 		}
 		System.out.println("===> END");
 	}
 
-	Value gameOverValue(Position pos) {
+	int gameOverValue(Position pos) {
 		int curr = pos.getPosInt();
-
 		if (curr == 0) {
-			return Value.LOSING;
+			return 0;
+		} else if (_memoized[curr] != -1) {
+			return _memoized[curr];
 		}
-
-		Value one = gameOverValue(new Position(curr - 1));
-		Value two = Value.LOSING;
-		boolean twoBranches = false;
-		if (curr > 1) {
-			two = gameOverValue(new Position(curr - 2));
-			twoBranches = true;
-		}
-
-		if ((twoBranches && (one == Value.LOSING || two == Value.LOSING))
-			|| (!twoBranches && one == Value.LOSING)) {
-			return Value.WINNING;
-		}
-		return Value.LOSING;
+		int one = gameOverValue(new Position(curr - 1));
+		int two = curr > 1 ? gameOverValue(new Position(curr - 2)) : 1;
+		int posVal = (one + two) < 2 ? 1 : 0;
+		_memoized[curr] = posVal;
+		return posVal;
 	}
 
 	Position myMove() {
-		if (gameOverValue(_position) == Value.LOSING) {
+		if (gameOverValue(_position) == 0) {
 			// lose slowly
 			return new Position(1);
 		} else {
 			ArrayList<Position> moves = generateMoves();
 			// other player's value
-			if (gameOverValue(moves.get(0)) == Value.LOSING) {
-				return new Position(1);
-			} else {
-				return new Position(2);
-			}
+			return gameOverValue(moves.get(0)) == 0 ? new Position(1) : new Position(2);
 		}
 	}
 
 	private Position _position;
 	private int _id;
+	private int[] _memoized;
+	private int _totalPieces;
 }

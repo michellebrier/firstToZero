@@ -16,7 +16,6 @@ class Game {
 	}
 
 	Game() {
-		_piecesLeft = 10;
 		_state = SETUP;
 	}
 
@@ -25,44 +24,41 @@ class Game {
 		Solver cpu;
 		cpu = null;
 		one = two = null;
-		_cpuOn = false;
-
 		while (true) {
 			if (_state == SETUP) {
+				cpu = null;
+				one = two = null;
+				_cpuOn = false;
+				_piecesLeft = 50;
 				System.out.println("====================================================");
 				System.out.println("Be the first one to get to zero!");
 				_scanner = new Scanner(System.in);
 				_state = PLAYING;
-				_piecesLeft = 10;
 			}
 
 			String decision = "";
 			while (!decision.equals("y") && !decision.equals("n")) {
-				if (decision.equals("q") || decision.equals("quit")) {
-					System.exit(0);
-				}
+				checkQuit(decision);
 				System.out.print("===> Play against CPU? (y/n): ");
 				decision = _scanner.next();
 			}
 			if (decision.equals("y")) {
-				cpu = new Solver();
-				cpu.setPosition(new Position(10));
+				cpu = new Solver(_piecesLeft);
+				cpu.setPosition(new Position(_piecesLeft));
 				_currPlayer = cpu;
 				_cpuOn = true;
-				String printDes = "";
-				while (!printDes.equals("y") && !printDes.equals("n")) {
-					if (printDes.equals("q") || printDes.equals("quit")) {
-						System.exit(0);
-					}
+				String input = "";
+				while (!input.equals("y") && !input.equals("n")) {
+					checkQuit(input);
 					System.out.println("===> Print game over values for all positions? (y/n): ");
-					printDes = _scanner.next();
+					input = _scanner.next();
 				}
-				if (printDes.equals("y")) {
+				if (input.equals("y")) {
 					cpu.printPositionValues();
 				}
 			} else {
 				one = new Player(1);
-				one.setPosition(new Position(10));
+				one.setPosition(new Position(_piecesLeft));
 				_currPlayer = one;
 			}
 
@@ -83,8 +79,11 @@ class Game {
 					}
 					_currPlayer = _cpuOn ? cpu : one;
 				} else {
+					long preTime = System.currentTimeMillis();
 					move = cpu.myMove();
 					_currPlayer = two;
+					long postTime = System.currentTimeMillis();
+					System.out.println("(Time taken to compute in ms: " + (postTime - preTime) + ")");
 				}
 				doMove(move);
 			}
@@ -139,6 +138,12 @@ class Game {
 		System.out.println(msg);
 		System.out.println("====================================================");
 		System.out.println("Play again!");
+	}
+
+	void checkQuit(String input) {
+		if (input.equals("q") || input.equals("quit")) {
+			System.exit(0);
+		}
 	}
 
 	private Scanner _scanner;
