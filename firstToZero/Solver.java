@@ -50,9 +50,9 @@ public class Solver extends Player {
 			return _memoized[curr];
 		}
 		int positionVal = 0;
-		ArrayList<Position> validMoves = _game.validMoves(pos);
-		for (int i = 0; i < validMoves.size(); i++) {
-			if (gameOverValue(validMoves.get(i)) == 0) {
+		ArrayList<Position> validPos = _game.validNextPositions(pos);
+		for (int i = 0; i < validPos.size(); i++) {
+			if (gameOverValue(validPos.get(i)) == 0) {
 				positionVal = 1;
 				break;
 			}
@@ -66,11 +66,11 @@ public class Solver extends Player {
 			// lose slowly
 			return new Position(1);
 		} else {
-			ArrayList<Position> validMoves = _game.validMoves(_position);
-			for (int i = 0; i < validMoves.size(); i++) {
+			ArrayList<Position> validPos = _game.validNextPositions(_position);
+			for (int i = 0; i < validPos.size(); i++) {
 				// other player's value
-				if (gameOverValue(validMoves.get(i)) == 0) {
-					return new Position(_position.getPosInt() - validMoves.get(i).getPosInt());
+				if (gameOverValue(validPos.get(i)) == 0) {
+					return new Position(_position.getPosInt() - validPos.get(i).getPosInt());
 				}
 			}
 			return null;

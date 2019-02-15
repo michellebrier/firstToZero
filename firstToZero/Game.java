@@ -121,7 +121,7 @@ class Game {
 		System.out.println(msg);
 	}
 
-	ArrayList<Position> validMoves(Position pos) {
+	ArrayList<Position> validNextPositions(Position pos) {
 		ArrayList<Position> ret = new ArrayList<>();
 		ret.add(new Position(pos.getPosInt() - 1));
 		if (pos.getPosInt() > 1) {
