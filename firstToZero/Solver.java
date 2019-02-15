@@ -5,10 +5,12 @@ package firstToZero;
 */
 
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Solver extends Player {
-	Solver(int totalPieces) {
+	Solver(Game game, int totalPieces) {
 		super(0);
+		_game = game;
 		_position = null;
 		_totalPieces = totalPieces;
 		_memoized = new int[totalPieces + 1];
@@ -42,16 +44,21 @@ public class Solver extends Player {
 
 	int gameOverValue(Position pos) {
 		int curr = pos.getPosInt();
-		if (curr == 0) {
+		if (_game.gameOver(pos)) {
 			return 0;
 		} else if (_memoized[curr] != -1) {
 			return _memoized[curr];
 		}
-		int one = gameOverValue(new Position(curr - 1));
-		int two = curr > 1 ? gameOverValue(new Position(curr - 2)) : 1;
-		int posVal = (one + two) < 2 ? 1 : 0;
-		_memoized[curr] = posVal;
-		return posVal;
+		int positionVal = 0;
+		ArrayList<Position> validMoves = _game.validMoves(pos);
+		for (int i = 0; i < validMoves.size(); i++) {
+			if (gameOverValue(validMoves.get(i)) == 0) {
+				positionVal = 1;
+				break;
+			}
+		}
+		_memoized[curr] = positionVal;
+		return positionVal;
 	}
 
 	Position myMove() {
@@ -59,8 +66,14 @@ public class Solver extends Player {
 			// lose slowly
 			return new Position(1);
 		} else {
-			// other player's value
-			return gameOverValue(new Position(_position.getPosInt() - 1)) == 0 ? new Position(1) : new Position(2);
+			ArrayList<Position> validMoves = _game.validMoves(_position);
+			for (int i = 0; i < validMoves.size(); i++) {
+				// other player's value
+				if (gameOverValue(validMoves.get(i)) == 0) {
+					return new Position(_position.getPosInt() - validMoves.get(i).getPosInt());
+				}
+			}
+			return null;
 		}
 	}
 
@@ -68,4 +81,5 @@ public class Solver extends Player {
 	private int _id;
 	private int[] _memoized;
 	private int _totalPieces;
+	private Game _game;
 }

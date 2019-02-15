@@ -5,6 +5,7 @@ package firstToZero;
 **/
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
 import static firstToZero.Game.State.*;
 import firstToZero.*;
@@ -43,7 +44,7 @@ class Game {
 				decision = _scanner.next();
 			}
 			if (decision.equals("y")) {
-				cpu = new Solver(_piecesLeft);
+				cpu = new Solver(this, _piecesLeft);
 				cpu.setPosition(new Position(_piecesLeft));
 				_currPlayer = cpu;
 				_cpuOn = true;
@@ -79,11 +80,8 @@ class Game {
 					}
 					_currPlayer = _cpuOn ? cpu : one;
 				} else {
-					long preTime = System.currentTimeMillis();
 					move = cpu.myMove();
 					_currPlayer = two;
-					long postTime = System.currentTimeMillis();
-					System.out.println("(Time taken to compute in ms: " + (postTime - preTime) + ")");
 				}
 				doMove(move);
 			}
@@ -123,8 +121,21 @@ class Game {
 		System.out.println(msg);
 	}
 
+	ArrayList<Position> validMoves(Position pos) {
+		ArrayList<Position> ret = new ArrayList<>();
+		ret.add(new Position(pos.getPosInt() - 1));
+		if (pos.getPosInt() > 1) {
+			ret.add(new Position(pos.getPosInt() - 2));
+		}
+		return ret;
+	}
+
 	boolean gameOver() {
 		return _piecesLeft == 0;
+	}
+
+	boolean gameOver(Position pos) {
+		return pos.getPosInt() == 0;
 	}
 
 	void reportWinner() {
